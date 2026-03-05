@@ -1,5 +1,6 @@
-require('dotenv').config();
+// backend/index.js
 
+require('dotenv').config();
 const connectToMongo = require('./db');
 const express = require('express');
 const cors = require('cors');
@@ -12,8 +13,9 @@ connectToMongo(process.env.MONGO_URI);
 // Middleware
 app.use(express.json());
 
+// CORS setup
 app.use(cors({
-  origin: true, // production me kisi bhi frontend ko allow karega
+  origin: true, // Production me kisi bhi frontend ko allow karega
   methods: ['GET','POST','PUT','DELETE'],
   credentials: true
 }));
@@ -24,8 +26,8 @@ app.use('/api/notes', require('./routes/notes'));
 
 // Test route
 app.get('/', (req, res) => {
-  res.send('My name is Muhammad Abdullah');
+  res.send('Backend running successfully');
 });
 
-// Important for Vercel
+// ✅ Export app for Vercel serverless
 module.exports = app;
