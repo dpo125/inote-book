@@ -58,8 +58,7 @@ const noteReducer = (state, action) => {
 
 const NoteState = (props) => {
   const [state, dispatch] = useReducer(noteReducer, initialState);
-
-  const host = "http://localhost:5000";
+const host = "/api";
   // ⚠️ Hardcoded tokens are insecure – move to environment variables or use proper authentication flow
   const authToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjlhNTJmY2Q1NGMzZDM4ZTgyOWIyZTNkIn0sImlhdCI6MTc3MjQzMzM1NywiZXhwIjoxNzczMDM4MTU3fQ.bnubmftRZKjucrU4-2FoHnLhbnpZSrqw-p6rl6p0Siw";
 
