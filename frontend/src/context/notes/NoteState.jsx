@@ -52,7 +52,7 @@ const NoteState = (props) => {
   const [state, dispatch] = useReducer(noteReducer, initialState);
 
   // ✅ Host from environment variable (works local + Vercel)
-  const host = import.meta.env.VITE_API_BASE_URL;
+ const host = import.meta.env.VITE_API_URL;
 
   // ✅ Auth token from localStorage (do NOT hardcode)
   const authToken = localStorage.getItem("token");
