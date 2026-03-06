@@ -1,15 +1,8 @@
-// NoteState.jsx
 import { useReducer } from "react";
 import NoteContext from "./NoteContext";
 
-// Initial state
-const initialState = {
-  notes: [],
-  loading: false,
-  error: null,
-};
+const initialState = { notes: [], loading: false, error: null };
 
-// Reducer function
 const noteReducer = (state, action) => {
   switch (action.type) {
     case "FETCH_NOTES_START":
@@ -18,17 +11,13 @@ const noteReducer = (state, action) => {
     case "EDIT_NOTE_START":
     case "SEARCH_NOTES_START":
       return { ...state, loading: true, error: null };
-
     case "FETCH_NOTES_SUCCESS":
     case "SEARCH_NOTES_SUCCESS":
       return { ...state, loading: false, notes: action.payload };
-
     case "ADD_NOTE_SUCCESS":
       return { ...state, loading: false, notes: [...state.notes, action.payload] };
-
     case "DELETE_NOTE_SUCCESS":
       return { ...state, loading: false, notes: state.notes.filter(note => note._id !== action.payload) };
-
     case "EDIT_NOTE_SUCCESS":
       return {
         ...state,
@@ -39,10 +28,8 @@ const noteReducer = (state, action) => {
             : note
         ),
       };
-
     case "OPERATION_FAILURE":
       return { ...state, loading: false, error: action.payload };
-
     default:
       return state;
   }
@@ -50,23 +37,15 @@ const noteReducer = (state, action) => {
 
 const NoteState = (props) => {
   const [state, dispatch] = useReducer(noteReducer, initialState);
+  const host = import.meta.env.VITE_API_URL;
+  const authToken = localStorage.getItem("auth-token");
 
-  // ✅ Host from environment variable (works local + Vercel)
- const host = import.meta.env.VITE_API_URL;
-
-  // ✅ Auth token from localStorage (do NOT hardcode)
-  const authToken = localStorage.getItem("token");
-
-  // Get all notes
   const getNotes = async () => {
     dispatch({ type: "FETCH_NOTES_START" });
     try {
-      const response = await fetch(`${host}/notes/fetchallnotes`, {
+      const response = await fetch(`${host}/api/notes/fetchallnotes`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": authToken,
-        },
+        headers: { "Content-Type": "application/json", "auth-token": authToken },
       });
       const json = await response.json();
       dispatch({ type: "FETCH_NOTES_SUCCESS", payload: json });
@@ -75,16 +54,12 @@ const NoteState = (props) => {
     }
   };
 
-  // Add a note
   const addNote = async (title, description, tag) => {
     dispatch({ type: "ADD_NOTE_START" });
     try {
-      const response = await fetch(`${host}/notes/addnote`, {
+      const response = await fetch(`${host}/api/notes/addnote`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": authToken,
-        },
+        headers: { "Content-Type": "application/json", "auth-token": authToken },
         body: JSON.stringify({ title, description, tag }),
       });
       const note = await response.json();
@@ -94,16 +69,12 @@ const NoteState = (props) => {
     }
   };
 
-  // Delete a note
   const deleteNote = async (id) => {
     dispatch({ type: "DELETE_NOTE_START" });
     try {
-      await fetch(`${host}/notes/deletenote/${id}`, {
+      await fetch(`${host}/api/notes/deletenote/${id}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": authToken,
-        },
+        headers: { "Content-Type": "application/json", "auth-token": authToken },
       });
       dispatch({ type: "DELETE_NOTE_SUCCESS", payload: id });
     } catch (error) {
@@ -111,16 +82,12 @@ const NoteState = (props) => {
     }
   };
 
-  // Edit a note
   const editNote = async (id, title, description, tag) => {
     dispatch({ type: "EDIT_NOTE_START" });
     try {
-      await fetch(`${host}/notes/updatenote/${id}`, {
+      await fetch(`${host}/api/notes/updatenote/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": authToken,
-        },
+        headers: { "Content-Type": "application/json", "auth-token": authToken },
         body: JSON.stringify({ title, description, tag }),
       });
       dispatch({ type: "EDIT_NOTE_SUCCESS", payload: { id, title, description, tag } });
@@ -129,7 +96,6 @@ const NoteState = (props) => {
     }
   };
 
-  // Search notes
   const searchNotes = async (query) => {
     if (!query || query.trim() === "") {
       getNotes();
@@ -137,12 +103,9 @@ const NoteState = (props) => {
     }
     dispatch({ type: "SEARCH_NOTES_START" });
     try {
-      const response = await fetch(`${host}/notes/search?q=${encodeURIComponent(query)}`, {
+      const response = await fetch(`${host}/api/notes/search?q=${encodeURIComponent(query)}`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "auth-token": authToken,
-        },
+        headers: { "Content-Type": "application/json", "auth-token": authToken },
       });
       const json = await response.json();
       dispatch({ type: "SEARCH_NOTES_SUCCESS", payload: json });
