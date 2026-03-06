@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+// ✅ Use environment variable for backend
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const navigate = useNavigate();
 
-  const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,9 +28,7 @@ const Login = () => {
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: credentials.email.trim().toLowerCase(),
           password: credentials.password.trim(),
@@ -45,6 +40,7 @@ const Login = () => {
       if (response.ok && (json.authToken || json.authtoken)) {
         const token = json.authToken || json.authtoken;
 
+        // ✅ Remember me: localStorage or sessionStorage
         if (rememberMe) {
           localStorage.setItem("auth-token", token);
         } else {
@@ -53,9 +49,7 @@ const Login = () => {
 
         setSuccess("Login successful 🎉");
 
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
+        setTimeout(() => navigate("/"), 1000);
       } else {
         setError(json.error || "Invalid credentials");
       }
@@ -75,24 +69,40 @@ const Login = () => {
           width: "100%",
           maxWidth: "400px",
           backgroundColor: "#FFF8F0",
+          borderLeft: "6px solid",
+          borderImage: "linear-gradient(to bottom, #FF9A8B, #FF6A88, #FF99AC) 1",
         }}
       >
         <div className="text-center mb-4">
-          <h2 className="fw-bold">Welcome Back</h2>
+          <h2
+            className="fw-bold"
+            style={{
+              background: "linear-gradient(45deg, #FF6A88, #FF99AC)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Welcome Back
+          </h2>
           <p className="text-muted">Login to your account</p>
         </div>
 
+        {/* Alerts */}
         {success && (
-          <div className="alert alert-success">{success}</div>
+          <div className="alert alert-success d-flex align-items-center">
+            ✅ {success}
+          </div>
         )}
-
         {error && (
-          <div className="alert alert-danger">{error}</div>
+          <div className="alert alert-danger d-flex align-items-center">
+            ⚠️ {error}
+          </div>
         )}
 
+        {/* Login Form */}
         <form onSubmit={handleLogin}>
           <div className="mb-3">
-            <label className="form-label">Email</label>
+            <label className="form-label fw-semibold">Email</label>
             <input
               type="email"
               name="email"
@@ -105,7 +115,7 @@ const Login = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Password</label>
+            <label className="form-label fw-semibold">Password</label>
             <input
               type="password"
               name="password"
@@ -125,26 +135,35 @@ const Login = () => {
               onChange={(e) => setRememberMe(e.target.checked)}
               disabled={loading}
             />
-            <label className="form-check-label">
-              Remember me
-            </label>
+            <label className="form-check-label fw-semibold">Remember me</label>
           </div>
 
           <button
             type="submit"
-            className="btn btn-primary w-100"
+            className="btn w-100 py-2"
+            style={{
+              background: loading
+                ? "#ccc"
+                : "linear-gradient(to right, #6DD5FA, #2980B9)",
+              color: "#fff",
+              fontWeight: 600,
+              fontSize: "1rem",
+              borderRadius: "8px",
+              cursor: loading ? "not-allowed" : "pointer",
+            }}
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Logging in..." : "🚀 Login"}
           </button>
         </form>
 
         <div className="text-center mt-3">
-          <span>
+          <span className="text-muted" style={{ fontSize: "0.9rem" }}>
             Don't have an account?{" "}
             <button
-              className="btn btn-link p-0"
+              className="btn btn-link fw-bold text-decoration-none p-0"
               onClick={() => navigate("/signup")}
+              disabled={loading}
             >
               Sign Up
             </button>
